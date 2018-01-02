@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
+    <script src="js/canvasjs.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        let lastData = [];
+
+        $(function () {
+            initialize();
+            setInterval(function() {
+                initialize();
+            } , 60*1000);
+        });
+
+
+        function initialize() {
+            console.log('Rerendering');
+            $.ajax({
+                url: "/analysis",
+                success: function (result) {
+                    lastData = result;
+                    var coinTemplate = $("#coin-template").html();
+                    $("#coinInfo").html(Mustache.to_html(coinTemplate, {data : result}));
+                    // setTimeout( function() {
+                    //     $("#coinTable").DataTable();
+                    // } , 1000);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <table class="table table-hover table-bordered table-striped" style="width:100%;" id="coinTable">
+            <thead>
+                <tr>
+                    <th>Coin</th>
+                    <th>number</th>
+                    <th>dayChange</th>
+                    <th>twoHourChange</th>
+                    <th>hourChange</th>
+                    <th>thirtyMinChange</th>
+                    <th>tenMinChange</th>
+                    <th>fiveMinChange</th>
+                    <th>oneMinChange</th>
+                    <th>bVolumeHourChange</th>
+                    <th>bVolumeFiveMinChange</th>
+                </tr>
+            </thead>
+            <tbody id="coinInfo">
+                
+            </tbody>
+        </table>
+    </div>
+    <script id="coin-template" type="text-template">
+        {{#data}}
+        <tr>
+            <td class="coin-column"><a href="/coin.html?market={{coin}}" target="_blank">{{coin}}</a> &nbsp; <a href="https://bittrex.com/Market/Index?MarketName={{coin}}" target="_blank">⚓</a></td>
+            <td>{{number}}</td>
+            <td>{{dayChange}}</td>
+            <td>{{twoHourChange}}</td>
+            <td>{{hourChange}}</td>
+            <td>{{thirtyMinChange}}</td>
+            <td>{{tenMinChange}}</td>
+            <td>{{fiveMinChange}}</td>
+            <td>{{oneMinChange}}</td>
+            <td>{{bVolumeHourChange}}</td>
+            <td>{{bVolumeFiveMinChange}}</td>
+
+        </tr>
+        {{/data}}
+    </script>
+</body>
+<style>
+    .coin-column {
+        min-width:135px;
+    }
+</style>
+</html>
