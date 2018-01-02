@@ -5,15 +5,15 @@
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet">
+    <!-- <link href="css/style.css" rel="stylesheet"> -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js"></script>
-    <script src="js/canvasjs.min.js"></script>
+    <!-- <script src="js/canvasjs.min.js"></script> -->
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
-    
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
@@ -22,20 +22,35 @@
 
         $(function () {
             initialize();
-            setInterval(function() {
+            setInterval(function () {
                 initialize();
-            } , 60*1000);
+            }, 60 * 1000);
         });
 
+        function showDetails() {
+
+        }
 
         function initialize() {
             console.log('Rerendering');
             $.ajax({
-                url: "/analysis",
+                url: "/buys",
                 success: function (result) {
                     lastData = result;
+                    console.log(result);
+                    var keyList = [];
+                    Object.keys(result).forEach(function (key, i) {
+                        keyList.push({
+                            coin: key,
+                            index: i + 1,
+                            result: result[key]
+                        });
+                    });
+                    console.log(keyList);
                     var coinTemplate = $("#coin-template").html();
-                    $("#coinInfo").html(Mustache.to_html(coinTemplate, {data : result}));
+                    $("#coinInfo").html(Mustache.to_html(coinTemplate, {
+                        data: keyList
+                    }));
                     // setTimeout( function() {
                     //     $("#coinTable").DataTable();
                     // } , 1000);
@@ -47,49 +62,99 @@
 
 <body>
     <div id="container">
+        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
         <table class="table table-hover table-bordered table-striped" style="width:100%;" id="coinTable">
             <thead>
                 <tr>
+                    <th>SI#</th>
                     <th>Coin</th>
-                    <th>number</th>
-                    <th>dayChange</th>
-                    <th>twoHourChange</th>
-                    <th>hourChange</th>
-                    <th>thirtyMinChange</th>
-                    <th>tenMinChange</th>
-                    <th>fiveMinChange</th>
-                    <th>oneMinChange</th>
-                    <th>bVolumeHourChange</th>
-                    <th>bVolumeFiveMinChange</th>
+                    <th>totalHoldings</th>
+                    <th>buyCount</th>
+                    <th>sellCount</th>
+                    <th>Actual Profit</th>
+                    <th>Calculated</th>
+                    <th>More</th>
                 </tr>
             </thead>
             <tbody id="coinInfo">
-                
+
             </tbody>
         </table>
     </div>
+
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" id="coin-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="coin-info">
+                        <table class="table table-hover table-bordered table-striped" style="width:100%;" id="coinTable">
+                            <thead>
+                                <tr>
+                                    <th>SI#</th>
+                                    <th>Coin</th>
+                                    <th>totalHoldings</th>
+                                    <th>buyCount</th>
+                                    <th>sellCount</th>
+                                    <th>Actual Profit</th>
+                                    <th>Calculated</th>
+                                    <th>More</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coinBuyInfo">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- <td class="coin-column"><a href="/coin.html?market={{coin}}" target="_blank">{{coin}}</a> &nbsp; <a href="https://bittrex.com/Market/Index?MarketName={{coin}}" target="_blank">⚓</a></td> -->
     <script id="coin-template" type="text-template">
         {{#data}}
         <tr>
-            <td class="coin-column"><a href="/coin.html?market={{coin}}" target="_blank">{{coin}}</a> &nbsp; <a href="https://bittrex.com/Market/Index?MarketName={{coin}}" target="_blank">⚓</a></td>
-            <td>{{number}}</td>
-            <td>{{dayChange}}</td>
-            <td>{{twoHourChange}}</td>
-            <td>{{hourChange}}</td>
-            <td>{{thirtyMinChange}}</td>
-            <td>{{tenMinChange}}</td>
-            <td>{{fiveMinChange}}</td>
-            <td>{{oneMinChange}}</td>
-            <td>{{bVolumeHourChange}}</td>
-            <td>{{bVolumeFiveMinChange}}</td>
-
+            <td>{{index}}</td>
+            <td class="coin-column">
+                <a href="https://bittrex.com/Market/Index?MarketName={{coin}}" target="_blank">{{coin}}</a>
+            </td>
+            <td>{{result.time}}</td>
+            <td>{{result.count}}</td>
+            <td>{{result.buyPrice}}</td>
+            <td>xx</td>
+            <td>xx</td>
+            <td><button type="button" class="btn btn-primary" onclick="showDetails('{{coin}}')">{{coin}}</button></td>
         </tr>
         {{/data}}
     </script>
+    <script id="coin-buy-template" type="text-template">
+            {{#data}}
+            <tr>
+                <td>{{index}}</td>
+                <td class="coin-column">
+                    <a href="https://bittrex.com/Market/Index?MarketName={{coin}}" target="_blank">{{coin}}</a>
+                </td>
+                <td>{{result.totalHoldings}}</td>
+                <td>{{result.buys.length}}</td>
+                <td>{{result.sells.length}}</td>
+                <td>xx</td>
+                <td>xx</td>
+            </tr>
+            {{/data}}
+        </script>
 </body>
 <style>
     .coin-column {
-        min-width:135px;
+        min-width: 135px;
     }
 </style>
+
 </html>

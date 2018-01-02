@@ -48,10 +48,11 @@ function getAggregates() {
         topCoins = coinList;
         let count = 0;
         for (let i = 0; i < 20; i++) {
+            // (!purchaseObj['BTC-' + topCoins[i].symbol] || purchaseObj['BTC-' + topCoins[i].symbol].totalHoldings == 0)
+            console.log('BTC-' + topCoins[i].symbol);
             if (marketArray.indexOf('BTC-' + topCoins[i].symbol) != -1 &&
                 topCoins[i].percent_change_1h > 0.5 && 
-                topCoins[i].percent_change_24h > 1 && count <= 10 &&
-                (!purchaseObj['BTC-' + topCoins[i].symbol] || purchaseObj['BTC-' + topCoins[i].symbol].totalHoldings == 0)) {
+                topCoins[i].percent_change_24h > 1 && count <= 10) {
                 count++;
                 console.log('BTC-' + topCoins[i].symbol, '    ', topCoins[i].percent_change_1h, '    ', topCoins[i].percent_change_24h, '    ',topCoins[i].rank, '   ', topCoins[i].price_btc);
                 let buyObj = {};
@@ -98,7 +99,7 @@ function getMarkets() {
         setInterval(function () {
             console.log('#############################')
             getAggregates();
-        }, 5000);
+        }, 60*1000);
     });
 }
 
